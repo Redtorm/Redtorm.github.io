@@ -17,19 +17,19 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
   <meta name="description" content="长度为N的原始输入序列组成的向量为x，经过傅里叶变换后的序列组成的向量为X，则有： $$ \boldsymbol X[k]&#x3D;\sum_{n&#x3D;0}^{N}e^{\frac{-2\pi ink}{N}}\boldsymbol x[n] $$ 将原始输入序列x划分为N1个长度为N2 &#x3D; N&#x2F;N1的子序列(将原序列按顺序划分为N1 × N2的矩阵，然后每列为一个子序列)，将第m个子序列记为xm，原序列和子">
 <meta property="og:type" content="article">
 <meta property="og:title" content="矩阵形式的FFT算法理解(Cooley-Tukey)">
 <meta property="og:url" content="http://example.com/2025/12/07/mcfft/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="土豆不土">
 <meta property="og:description" content="长度为N的原始输入序列组成的向量为x，经过傅里叶变换后的序列组成的向量为X，则有： $$ \boldsymbol X[k]&#x3D;\sum_{n&#x3D;0}^{N}e^{\frac{-2\pi ink}{N}}\boldsymbol x[n] $$ 将原始输入序列x划分为N1个长度为N2 &#x3D; N&#x2F;N1的子序列(将原序列按顺序划分为N1 × N2的矩阵，然后每列为一个子序列)，将第m个子序列记为xm，原序列和子">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-12-07T14:15:02.851Z">
 <meta property="article:modified_time" content="2025-12-07T14:15:02.851Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="song">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2025/12/07/mcfft/">
@@ -45,7 +45,7 @@
   };
 </script>
 
-  <title>矩阵形式的FFT算法理解(Cooley-Tukey) | Hexo</title>
+  <title>矩阵形式的FFT算法理解(Cooley-Tukey) | 土豆不土</title>
   
 
 
@@ -96,7 +96,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Hexo</h1>
+      <h1 class="site-title">土豆不土</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -154,12 +154,12 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="John Doe">
+      <meta itemprop="name" content="song">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="土豆不土">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -504,7 +504,7 @@ class="math inline">16 × 1</span>的矩阵进行转置。最后将所有序
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">John Doe</p>
+  <p class="site-author-name" itemprop="name">song</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -544,9 +544,9 @@ class="math inline">16 × 1</span>的矩阵进行转置。最后将所有序
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">John Doe</span>
+  <span class="author" itemprop="copyrightHolder">song</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
   </div>
 
         
@@ -572,7 +572,7 @@ class="math inline">16 × 1</span>的矩阵进行转置。最后将所有序
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
