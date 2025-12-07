@@ -169,7 +169,7 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2025-12-07 21:48:33" itemprop="dateCreated datePublished" datetime="2025-12-07T21:48:33+08:00">2025-12-07</time>
+              <time title="Created: 2025-12-07 22:15:02" itemprop="dateCreated datePublished" datetime="2025-12-07T22:15:02+08:00">2025-12-07</time>
             </span>
 
           
@@ -183,30 +183,241 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>长度为N的原始输入序列组成的向量为$\boldsymbol x$，经过傅里叶变换后的序列组成的向量为$\boldsymbol X$，则有：<br>$$<br>\boldsymbol X[k]&#x3D;\sum_{n&#x3D;0}^{N}e^{\frac{-2\pi ink}{N}}\boldsymbol x[n]<br>$$</p>
-<p>将原始输入序列$\boldsymbol x$划分为$N_1$个长度为$N_2&#x3D;N&#x2F;N_1$的子序列(将原序列按顺序划分为$N_1 \times N_2$的矩阵，然后每列为一个子序列)，将第$m$个子序列记为$\boldsymbol x_m$，原序列和子序列中的元素对应关系为：<br>$$<br>\boldsymbol x_m[s] &#x3D; x[sN_1+m]<br>$$<br>设序列$\boldsymbol x_m$的傅里叶变换为$\boldsymbol X_m$。进而有：<br>$$<br>\begin{align}<br>\boldsymbol X[k]&amp;&#x3D;\sum_{n&#x3D;0}^{N}e^{\frac{-2\pi ink}{N}}\boldsymbol x[n] \<br>&amp;&#x3D;\sum_{n&#x3D;0}^{N}e^{\frac{-2ki\pi (sN_1+m)}{N}}\boldsymbol x[sN_1+m]   \<br>&amp;&#x3D;\sum_{n&#x3D;0}^{N}e^{\frac{-2ki\pi m}{N}}e^{\frac{-2ki\pi s}{N_2}}\boldsymbol x_m[s] \<br>&amp;&#x3D;\sum_{m&#x3D;0}^{N_1}e^{\frac{-2ki\pi m}{N}}\sum_{s&#x3D;0}^{N_2}e^{\frac{-2ki\pi s}{N_2}}\boldsymbol x_m[s]<br>\end{align}<br>$$<br>设$W_N&#x3D;e^{\frac{2i\pi}{N}}$，则有：<br>$$<br>\boldsymbol X[k]&#x3D;\sum_{m&#x3D;0}^{N_1}W_N^{km}\boldsymbol X_m[k%N_2]<br>$$<br>如果将输出序列$\boldsymbol X$划分为$N_1\times N_2$的矩阵，矩阵中的元素和序列中的元素的对应关系为：<br>$$<br>\boldsymbol X_{r,c}&#x3D;\boldsymbol X[rN_2 + c]<br>$$<br>则有：<br>$$<br>\begin{align}<br>\boldsymbol X_{r,c}&amp;&#x3D;\sum_{m&#x3D;0}^{N_1}W_N^{(rN_2+c)m}\boldsymbol X_m[k%N_2] \<br>&amp;&#x3D;\sum_{m&#x3D;0}^{N_1}W_{N_1}^{rm}W_N^{cm}\boldsymbol X_m[c]<br>\end{align}<br>$$<br>设：<br>$$<br>F_{N_1}&#x3D;\left( \begin{matrix} W_{N_1}^{0} &amp; W_{N_1}^{0} &amp; \cdots &amp; W_{N_1}^{0} \ W_{N_1}^{0} &amp; W_{N_1}^{1} &amp; \cdots &amp; W_{N_1}^{N_1-1}\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots \ W_{N_1}^{0} &amp; W_{N_1}^{N_1-1} &amp; \cdots &amp; W_{N_1}^{(N_1-1)(N_1-1)}\end{matrix} \right)<br>$$</p>
-<p>$$<br>T_{N_1N_2}&#x3D;\left( \begin{matrix} W_{N}^{0} &amp; W_{N}^{0} &amp; \cdots &amp; W_{N}^{0} \ W_{N}^{0} &amp; W_{N}^{1} &amp; \cdots &amp; W_{N}^{N_2-1}\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots \ W_{N}^{0} &amp; W_{N}^{N_1-1} &amp; \cdots &amp; W_{N}^{(N_1-1)(N_2-1)}\end{matrix} \right)<br>$$</p>
-<p>$$<br>X_{in}&#x3D;\left( \begin{matrix} X_{0}[0] &amp; X_{0}[1] &amp; \cdots &amp; X_{0}[N_2-1] \ X_{1}[0] &amp; X_{1}[1] &amp; \cdots &amp; X_{1}[N_2-1]\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots \ X_{N_1-1}[0] &amp; X_{N_1-1}[1] &amp; \cdots &amp; X_{N_1-1}[N_2-1]\end{matrix} \right)<br>$$<br>则有：<br>$$<br>\boldsymbol X_{out}&#x3D;F_{N_1}\cdot(T_{N_1N_2} \odot \boldsymbol X_{in})<br>$$<br>在$\boldsymbol X_{in}$中每一行是一个子序列的傅里叶变换序列，这些子序列的傅里叶变换序列可以递归地使用上面的方法计算得到。一共需要递归地计算$log_{N_1}{N}$轮，直到子序列中只有一个数，一个数的傅里叶变换就是其本身。每轮的计算次数为$N_1N_1N_2+N_1N_2&#x3D;(N1+1)N$次。故该算法的时间复杂度为$(N1+1)Nlog_{N_1}{N}$。</p>
-<p>注意到：<br>$$<br>\boldsymbol X[k]&#x3D;\sum_{m&#x3D;0}^{N_1}e^{\frac{-2ki\pi m}{N}}\sum_{s&#x3D;0}^{N_2}e^{\frac{-2ki\pi s}{N_2}}\boldsymbol x_m[s]<br>$$<br>其中$X_m[k]&#x3D;\sum_{s&#x3D;0}^{N_2}e^{\frac{-2ki\pi s}{N_2}}\boldsymbol x_m[s]$为$N_2$点的 DFT，上面公式的含义为$\boldsymbol X[k]$的计算可以拆分为$N_1$个$N_2$点的 DFT 进行计算，然后再组合。而且每个$N_2$点 DFT使用到的原序列中的元素为$sN_1+m,s\in{0,1,2,…,N_2}$，对于每个序列需要固定 $m$。每个$N_2$点 DFT使用到的原序列中的元素在原序列中并不连续，这样不方便进行迭代计算。</p>
-<p>所以需要将原序列中的元素顺序进行调整，调整为每个$N_2$点 DFT使用的元素连续存储。将原序列视为$N_1\times N_2$的矩阵，列优先存储，然后转置即可。</p>
-<p>其中每个$N_2$点的 DFT 可以继续使用上面公式进行拆分，也需要继续对每个序列的元素顺序进行调整。</p>
-<p>下面以 8 点 FFT 使用 radix2 为例进行说明，radix2 说明$N_1&#x3D;2$，首先将原序列视为$2\times 4$的矩阵（列优先存储）：<br>$$<br>\left[<br>\begin{matrix}<br>x_0 &amp; x_2 &amp; x_4 &amp; x_6 \<br>x_1 &amp; x_3 &amp; x_5 &amp; x_7<br>\end{matrix}<br>\right]<br>$$<br>然后对上面矩阵转置：<br>$$<br>\left[<br>\begin{matrix}<br>x_0 &amp; x_4 &amp; x_1 &amp; x_5 \<br>x_2 &amp; x_6 &amp; x_3 &amp; x_7<br>\end{matrix}<br>\right]<br>$$<br>将上面序列视为两个$2\times2$ 的矩阵：<br>$$<br>\left[<br>\begin{matrix}<br>x_0 &amp; x_4  \<br>x_2 &amp; x_6<br>\end{matrix}<br>\right]<br>\left[<br>\begin{matrix}<br>x_1 &amp; x_5  \<br>x_3 &amp; x_7<br>\end{matrix}<br>\right]<br>$$<br>继续对每个矩阵进行转置：<br>$$<br>\left[<br>\begin{matrix}<br>x_0 &amp; x_2  \<br>x_4 &amp; x_6<br>\end{matrix}<br>\right]<br>\left[<br>\begin{matrix}<br>x_1 &amp; x_3  \<br>x_5 &amp; x_7<br>\end{matrix}<br>\right]<br>$$<br>继续进行拆分：<br>$$<br>\left[<br>\begin{matrix}<br>x_0 \<br>x_4<br>\end{matrix}<br>\right]<br>\left[<br>\begin{matrix}<br>x_2 \<br>x_6<br>\end{matrix}<br>\right]<br>\left[<br>\begin{matrix}<br>x_1 \<br>x_5<br>\end{matrix}<br>\right]<br>\left[<br>\begin{matrix}<br>x_3 \<br>x_7<br>\end{matrix}<br>\right]<br>$$<br>再对每个子序列进行转置，由于每个子序列是$2\times 1$的矩阵，转置之后再拆分变为：<br>$$<br>\left[<br>x_0<br>\right]<br>\left[<br>x_4<br>\right]<br>\left[<br>x_2<br>\right]<br>\left[<br>x_6<br>\right]<br>\left[<br>x_1<br>\right]<br>\left[<br>x_5<br>\right]<br>\left[<br>x_3<br>\right]<br>\left[<br>x_7<br>\right]<br>$$<br>到此步每个子序列的长度为 1，其傅里叶变换为其本身，将其表示如下（下面所有矩阵都是行优先）：<br>$$<br>\left[<br>Z_0[0]<br>\right]<br>\left[<br>Z_1[0]<br>\right]<br>\left[<br>Z_2[0]<br>\right]<br>\left[<br>Z_3[0]<br>\right]<br>\left[<br>Z_4[0]<br>\right]<br>\left[<br>Z_5[0]<br>\right]<br>\left[<br>Z_6[0]<br>\right]<br>\left[<br>Z_7[0]<br>\right]<br>$$<br>下面开始按照$\boldsymbol X_{out}&#x3D;F_{N_1}\cdot(T_{N_1N_2} \odot \boldsymbol X_{in})$进行合并计算：<br>$$<br>\left[\begin{matrix}G_0[0] \G_0[1] \end{matrix}\right]&#x3D;\left[\begin{matrix}W_2^0 &amp; W_2^0 \ W_2^0 &amp; W_2^1 \end{matrix}\right]\cdot \left(\left[\begin{matrix}W_2^0 \W_2^0 \end{matrix}\right]\odot\left[\begin{matrix}Z_0[0] \Z_1[0] \end{matrix}\right]\right)<br>$$<br>对八个个子序列分别进行合并计算得到4个 2 点 DFT 序列：<br>$$<br>\left[\begin{matrix}G_0[0] \G_0[1]\end{matrix}\right]<br>\left[\begin{matrix}G_0[0] \G_1[1]\end{matrix}\right]<br>\left[\begin{matrix}G_0[0] \G_2[1]\end{matrix}\right]<br>\left[\begin{matrix}G_0[0] \G_3[1]\end{matrix}\right]<br>$$<br>继续进行下一轮合并：<br>$$<br>\left[\begin{matrix}F_0[0] &amp; F_0[1]\F_0[2] &amp; F_0[3]\end{matrix}\right]&#x3D;\left[\begin{matrix}W_2^0 &amp; W_2^0 \ W_2^0 &amp; W_2^1 \end{matrix}\right]\cdot \left(\left[\begin{matrix}W_4^0 &amp; W_4^0\W_4^0 &amp; W_4^1\end{matrix}\right]\odot\left[\begin{matrix}G_0[0] &amp; G_0[1]\G_1[0] &amp; G_1[1]\end{matrix}\right]\right)<br>$$<br>对四个子序列分别进行合并计算得到 2 个 4 点的 DFT 序列：<br>$$<br>\left[\begin{matrix}F_0[0] &amp; F_0[1]\F_0[2] &amp; F_0[3]\end{matrix}\right]<br>\left[\begin{matrix}F_1[0] &amp; F_1[1]\F_1[2] &amp; F_1[3]\end{matrix}\right]<br>$$<br>最后一步，对两个子序列进行合并计算得到最终的 8 点 DFT 序列：<br>$$<br>\left[\begin{matrix}X[0] &amp; X[1] &amp; X[2] &amp; X[3] \ X[4] &amp; X[5] &amp; X[6] &amp; X[7]\end{matrix}\right]&#x3D;\left[\begin{matrix}W_2^0 &amp; W_2^0 \ W_2^0 &amp; W_2^1 \end{matrix}\right]\cdot \left(\left[\begin{matrix}W_8^0 &amp; W_8^0 &amp; W_8^0 &amp; W_8^0 \W_8^0 &amp; W_8^1 &amp; W_8^2 &amp; W_8^3\end{matrix}\right]\odot\left[\begin{matrix}F_0[0] &amp; F_0[1] &amp; F_0[2] &amp; F_0[3]\F_1[0] &amp; F_1[1] &amp; F_1[2] &amp; F_1[3] \end{matrix}\right]\right)<br>$$<br>计算过程表示为如下图：</p>
-<p><img src="https://img.woaitingting.site/uPic/image-20231103170539519.png" alt="image-20231103170539519"></p>
+          <p>长度为N的原始输入序列组成的向量为<span
+class="math inline"><strong>x</strong></span>，经过傅里叶变换后的序列组成的向量为<span
+class="math inline"><strong>X</strong></span>，则有： <span
+class="math display">$$
+\boldsymbol X[k]=\sum_{n=0}^{N}e^{\frac{-2\pi ink}{N}}\boldsymbol x[n]
+$$</span></p>
+<p>将原始输入序列<span
+class="math inline"><strong>x</strong></span>划分为<span
+class="math inline"><em>N</em><sub>1</sub></span>个长度为<span
+class="math inline"><em>N</em><sub>2</sub> = <em>N</em>/<em>N</em><sub>1</sub></span>的子序列(将原序列按顺序划分为<span
+class="math inline"><em>N</em><sub>1</sub> × <em>N</em><sub>2</sub></span>的矩阵，然后每列为一个子序列)，将第<span
+class="math inline"><em>m</em></span>个子序列记为<span
+class="math inline"><strong>x</strong><sub><em>m</em></sub></span>，原序列和子序列中的元素对应关系为：
+<span
+class="math display"><strong>x</strong><sub><em>m</em></sub>[<em>s</em>] = <em>x</em>[<em>s</em><em>N</em><sub>1</sub>+<em>m</em>]</span>
+设序列<span
+class="math inline"><strong>x</strong><sub><em>m</em></sub></span>的傅里叶变换为<span
+class="math inline"><strong>X</strong><sub><em>m</em></sub></span>。进而有：
+<span class="math display">$$
+\begin{align}
+\boldsymbol X[k]&amp;=\sum_{n=0}^{N}e^{\frac{-2\pi ink}{N}}\boldsymbol
+x[n] \\
+&amp;=\sum_{n=0}^{N}e^{\frac{-2ki\pi (sN_1+m)}{N}}\boldsymbol
+x[sN_1+m]   \\
+&amp;=\sum_{n=0}^{N}e^{\frac{-2ki\pi m}{N}}e^{\frac{-2ki\pi
+s}{N_2}}\boldsymbol x_m[s] \\
+&amp;=\sum_{m=0}^{N_1}e^{\frac{-2ki\pi
+m}{N}}\sum_{s=0}^{N_2}e^{\frac{-2ki\pi s}{N_2}}\boldsymbol x_m[s]
+\end{align}
+$$</span> 设<span
+class="math inline">$W_N=e^{\frac{2i\pi}{N}}$</span>，则有： <span
+class="math display">$$
+\boldsymbol X[k]=\sum_{m=0}^{N_1}W_N^{km}\boldsymbol X_m[k\%N_2]
+$$</span> 如果将输出序列<span
+class="math inline"><strong>X</strong></span>划分为<span
+class="math inline"><em>N</em><sub>1</sub> × <em>N</em><sub>2</sub></span>的矩阵，矩阵中的元素和序列中的元素的对应关系为：
+<span
+class="math display"><strong>X</strong><sub><em>r</em>, <em>c</em></sub> = <strong>X</strong>[<em>r</em><em>N</em><sub>2</sub>+<em>c</em>]</span>
+则有： <span class="math display">$$
+\begin{align}
+\boldsymbol X_{r,c}&amp;=\sum_{m=0}^{N_1}W_N^{(rN_2+c)m}\boldsymbol
+X_m[k\%N_2] \\
+&amp;=\sum_{m=0}^{N_1}W_{N_1}^{rm}W_N^{cm}\boldsymbol X_m[c]
+\end{align}
+$$</span> 设： <span class="math display">$$
+F_{N_1}=\left( \begin{matrix} W_{N_1}^{0} &amp; W_{N_1}^{0} &amp; \cdots
+&amp; W_{N_1}^{0} \\ W_{N_1}^{0} &amp; W_{N_1}^{1} &amp; \cdots &amp;
+W_{N_1}^{N_1-1}\\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+W_{N_1}^{0} &amp; W_{N_1}^{N_1-1} &amp; \cdots &amp;
+W_{N_1}^{(N_1-1)(N_1-1)}\end{matrix} \right)
+$$</span></p>
+<p><span class="math display">$$
+T_{N_1N_2}=\left( \begin{matrix} W_{N}^{0} &amp; W_{N}^{0} &amp; \cdots
+&amp; W_{N}^{0} \\ W_{N}^{0} &amp; W_{N}^{1} &amp; \cdots &amp;
+W_{N}^{N_2-1}\\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+W_{N}^{0} &amp; W_{N}^{N_1-1} &amp; \cdots &amp;
+W_{N}^{(N_1-1)(N_2-1)}\end{matrix} \right)
+$$</span></p>
+<p><span class="math display">$$
+X_{in}=\left( \begin{matrix} X_{0}[0] &amp; X_{0}[1] &amp; \cdots &amp;
+X_{0}[N_2-1] \\ X_{1}[0] &amp; X_{1}[1] &amp; \cdots &amp;
+X_{1}[N_2-1]\\ \vdots &amp; \vdots &amp; \vdots &amp; \vdots \\
+X_{N_1-1}[0] &amp; X_{N_1-1}[1] &amp; \cdots &amp;
+X_{N_1-1}[N_2-1]\end{matrix} \right)
+$$</span> 则有： <span
+class="math display"><strong>X</strong><sub><em>o</em><em>u</em><em>t</em></sub> = <em>F</em><sub><em>N</em><sub>1</sub></sub> ⋅ (<em>T</em><sub><em>N</em><sub>1</sub><em>N</em><sub>2</sub></sub>⊙<strong>X</strong><sub><em>i</em><em>n</em></sub>)</span>
+在<span
+class="math inline"><strong>X</strong><sub><em>i</em><em>n</em></sub></span>中每一行是一个子序列的傅里叶变换序列，这些子序列的傅里叶变换序列可以递归地使用上面的方法计算得到。一共需要递归地计算<span
+class="math inline"><em>l</em><em>o</em><em>g</em><sub><em>N</em><sub>1</sub></sub><em>N</em></span>轮，直到子序列中只有一个数，一个数的傅里叶变换就是其本身。每轮的计算次数为<span
+class="math inline"><em>N</em><sub>1</sub><em>N</em><sub>1</sub><em>N</em><sub>2</sub> + <em>N</em><sub>1</sub><em>N</em><sub>2</sub> = (<em>N</em>1+1)<em>N</em></span>次。故该算法的时间复杂度为<span
+class="math inline">(<em>N</em>1+1)<em>N</em><em>l</em><em>o</em><em>g</em><sub><em>N</em><sub>1</sub></sub><em>N</em></span>。</p>
+<p>注意到： <span class="math display">$$
+\boldsymbol X[k]=\sum_{m=0}^{N_1}e^{\frac{-2ki\pi
+m}{N}}\sum_{s=0}^{N_2}e^{\frac{-2ki\pi s}{N_2}}\boldsymbol x_m[s]
+$$</span> 其中<span
+class="math inline">$X_m[k]=\sum_{s=0}^{N_2}e^{\frac{-2ki\pi
+s}{N_2}}\boldsymbol x_m[s]$</span>为<span
+class="math inline"><em>N</em><sub>2</sub></span>点的
+DFT，上面公式的含义为<span
+class="math inline"><strong>X</strong>[<em>k</em>]</span>的计算可以拆分为<span
+class="math inline"><em>N</em><sub>1</sub></span>个<span
+class="math inline"><em>N</em><sub>2</sub></span>点的 DFT
+进行计算，然后再组合。而且每个<span
+class="math inline"><em>N</em><sub>2</sub></span>点
+DFT使用到的原序列中的元素为<span
+class="math inline"><em>s</em><em>N</em><sub>1</sub> + <em>m</em>, <em>s</em> ∈ {0, 1, 2, ..., <em>N</em><sub>2</sub>}</span>，对于每个序列需要固定
+<span class="math inline"><em>m</em></span>。每个<span
+class="math inline"><em>N</em><sub>2</sub></span>点
+DFT使用到的原序列中的元素在原序列中并不连续，这样不方便进行迭代计算。</p>
+<p>所以需要将原序列中的元素顺序进行调整，调整为每个<span
+class="math inline"><em>N</em><sub>2</sub></span>点
+DFT使用的元素连续存储。将原序列视为<span
+class="math inline"><em>N</em><sub>1</sub> × <em>N</em><sub>2</sub></span>的矩阵，列优先存储，然后转置即可。</p>
+<p>其中每个<span class="math inline"><em>N</em><sub>2</sub></span>点的
+DFT
+可以继续使用上面公式进行拆分，也需要继续对每个序列的元素顺序进行调整。</p>
+<p>下面以 8 点 FFT 使用 radix2 为例进行说明，radix2 说明<span
+class="math inline"><em>N</em><sub>1</sub> = 2</span>，首先将原序列视为<span
+class="math inline">2 × 4</span>的矩阵（列优先存储）： <span
+class="math display">$$
+\left[
+\begin{matrix}
+x_0 &amp; x_2 &amp; x_4 &amp; x_6 \\
+x_1 &amp; x_3 &amp; x_5 &amp; x_7
+\end{matrix}
+\right]
+$$</span> 然后对上面矩阵转置： <span class="math display">$$
+\left[
+\begin{matrix}
+x_0 &amp; x_4 &amp; x_1 &amp; x_5 \\
+x_2 &amp; x_6 &amp; x_3 &amp; x_7
+\end{matrix}
+\right]
+$$</span> 将上面序列视为两个<span class="math inline">2 × 2</span>
+的矩阵： <span class="math display">$$
+\left[
+\begin{matrix}
+x_0 &amp; x_4  \\
+x_2 &amp; x_6
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+x_1 &amp; x_5  \\
+x_3 &amp; x_7
+\end{matrix}
+\right]
+$$</span> 继续对每个矩阵进行转置： <span class="math display">$$
+\left[
+\begin{matrix}
+x_0 &amp; x_2  \\
+x_4 &amp; x_6
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+x_1 &amp; x_3  \\
+x_5 &amp; x_7
+\end{matrix}
+\right]
+$$</span> 继续进行拆分： <span class="math display">$$
+\left[
+\begin{matrix}
+x_0 \\
+x_4
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+x_2 \\
+x_6
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+x_1 \\
+x_5
+\end{matrix}
+\right]
+\left[
+\begin{matrix}
+x_3 \\
+x_7
+\end{matrix}
+\right]
+$$</span> 再对每个子序列进行转置，由于每个子序列是<span
+class="math inline">2 × 1</span>的矩阵，转置之后再拆分变为： <span
+class="math display">[<em>x</em><sub>0</sub>][<em>x</em><sub>4</sub>][<em>x</em><sub>2</sub>][<em>x</em><sub>6</sub>][<em>x</em><sub>1</sub>][<em>x</em><sub>5</sub>][<em>x</em><sub>3</sub>][<em>x</em><sub>7</sub>]</span>
+到此步每个子序列的长度为
+1，其傅里叶变换为其本身，将其表示如下（下面所有矩阵都是行优先）： <span
+class="math display">[<em>Z</em><sub>0</sub>[0]][<em>Z</em><sub>1</sub>[0]][<em>Z</em><sub>2</sub>[0]][<em>Z</em><sub>3</sub>[0]][<em>Z</em><sub>4</sub>[0]][<em>Z</em><sub>5</sub>[0]][<em>Z</em><sub>6</sub>[0]][<em>Z</em><sub>7</sub>[0]]</span>
+下面开始按照<span
+class="math inline"><strong>X</strong><sub><em>o</em><em>u</em><em>t</em></sub> = <em>F</em><sub><em>N</em><sub>1</sub></sub> ⋅ (<em>T</em><sub><em>N</em><sub>1</sub><em>N</em><sub>2</sub></sub>⊙<strong>X</strong><sub><em>i</em><em>n</em></sub>)</span>进行合并计算：
+<span class="math display">$$
+\left[\begin{matrix}G_0[0] \\G_0[1]
+\end{matrix}\right]=\left[\begin{matrix}W_2^0 &amp; W_2^0 \\ W_2^0 &amp;
+W_2^1 \end{matrix}\right]\cdot \left(\left[\begin{matrix}W_2^0 \\W_2^0
+\end{matrix}\right]\odot\left[\begin{matrix}Z_0[0] \\Z_1[0]
+\end{matrix}\right]\right)
+$$</span> 对八个个子序列分别进行合并计算得到4个 2 点 DFT 序列： <span
+class="math display">$$
+\left[\begin{matrix}G_0[0] \\G_0[1]\end{matrix}\right]
+\left[\begin{matrix}G_0[0] \\G_1[1]\end{matrix}\right]
+\left[\begin{matrix}G_0[0] \\G_2[1]\end{matrix}\right]
+\left[\begin{matrix}G_0[0] \\G_3[1]\end{matrix}\right]
+$$</span> 继续进行下一轮合并： <span class="math display">$$
+\left[\begin{matrix}F_0[0] &amp; F_0[1]\\F_0[2] &amp;
+F_0[3]\end{matrix}\right]=\left[\begin{matrix}W_2^0 &amp; W_2^0 \\ W_2^0
+&amp; W_2^1 \end{matrix}\right]\cdot \left(\left[\begin{matrix}W_4^0
+&amp; W_4^0\\W_4^0 &amp;
+W_4^1\end{matrix}\right]\odot\left[\begin{matrix}G_0[0] &amp;
+G_0[1]\\G_1[0] &amp; G_1[1]\end{matrix}\right]\right)
+$$</span> 对四个子序列分别进行合并计算得到 2 个 4 点的 DFT 序列： <span
+class="math display">$$
+\left[\begin{matrix}F_0[0] &amp; F_0[1]\\F_0[2] &amp;
+F_0[3]\end{matrix}\right]
+\left[\begin{matrix}F_1[0] &amp; F_1[1]\\F_1[2] &amp;
+F_1[3]\end{matrix}\right]
+$$</span> 最后一步，对两个子序列进行合并计算得到最终的 8 点 DFT 序列：
+<span class="math display">$$
+\left[\begin{matrix}X[0] &amp; X[1] &amp; X[2] &amp; X[3] \\ X[4] &amp;
+X[5] &amp; X[6] &amp; X[7]\end{matrix}\right]=\left[\begin{matrix}W_2^0
+&amp; W_2^0 \\ W_2^0 &amp; W_2^1 \end{matrix}\right]\cdot
+\left(\left[\begin{matrix}W_8^0 &amp; W_8^0 &amp; W_8^0 &amp; W_8^0
+\\W_8^0 &amp; W_8^1 &amp; W_8^2 &amp;
+W_8^3\end{matrix}\right]\odot\left[\begin{matrix}F_0[0] &amp; F_0[1]
+&amp; F_0[2] &amp; F_0[3]\\F_1[0] &amp; F_1[1] &amp; F_1[2] &amp; F_1[3]
+\end{matrix}\right]\right)
+$$</span> 计算过程表示为如下图：</p>
+<figure>
+<img
+src="https://img.woaitingting.site/uPic/image-20231103170539519.png"
+alt="image-20231103170539519" />
+<figcaption aria-hidden="true">image-20231103170539519</figcaption>
+</figure>
 <p>所以矩阵形式的 FFT 算法设计思路为：</p>
 <ul>
 <li><p>对序列长度进行分解，确定 radix序列</p>
-<p>例如上面例子中将长度 8 分解为$2\times 2\times 2$，即三次 radix2 的合并计算</p>
-<p>如果是 512 的序列可以分解为$2\times 16\times 16$，即一次 radix2 和两次 radix16 合并</p>
-</li>
+<p>例如上面例子中将长度 8 分解为<span
+class="math inline">2 × 2 × 2</span>，即三次 radix2 的合并计算</p>
+<p>如果是 512 的序列可以分解为<span
+class="math inline">2 × 16 × 16</span>，即一次 radix2 和两次 radix16
+合并</p></li>
 <li><p>通过矩阵转置对原序列进行重新排列，也即位置换</p>
-<p>如果是上面 512 的序列分解为$2\times 16\times 16$，首先将 512 序列视为列优先$2\times256$的矩阵进行转置，再将其分为两个 256 的序列，每个序列视为$16\times16$的列优先矩阵进行转置，最后将其分解为 16 个 长度为 16 的序列，对每一个序列，将其视为$16\times1$的矩阵进行转置。最后将所有序列顺序排布即可。</p>
-</li>
-<li><p>迭代对子序列进行合并，将短的 DFT 序列合并为长的 DFT 序列</p>
-</li>
+<p>如果是上面 512 的序列分解为<span
+class="math inline">2 × 16 × 16</span>，首先将 512 序列视为列优先<span
+class="math inline">2 × 256</span>的矩阵进行转置，再将其分为两个 256
+的序列，每个序列视为<span
+class="math inline">16 × 16</span>的列优先矩阵进行转置，最后将其分解为
+16 个 长度为 16 的序列，对每一个序列，将其视为<span
+class="math inline">16 × 1</span>的矩阵进行转置。最后将所有序列顺序排布即可。</p></li>
+<li><p>迭代对子序列进行合并，将短的 DFT 序列合并为长的 DFT 序列</p></li>
 </ul>
 <p>算法实现如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">generate_matrix</span>(<span class="params">n1, n2, dft</span>):</span><br><span class="line">    <span class="keyword">if</span> dft :</span><br><span class="line">        <span class="built_in">len</span> = n1</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">len</span> = n1 * n2</span><br><span class="line">        <span class="comment"># print(len)</span></span><br><span class="line">    matrix = np.ones((n1, n2)) + <span class="number">1.j</span> * np.zeros((n1, n2))</span><br><span class="line">    w = np.cos(<span class="number">2</span> * np.pi / <span class="built_in">len</span>) - <span class="number">1.j</span> * np.sin(<span class="number">2</span> * np.pi / <span class="built_in">len</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n2):</span><br><span class="line">        matrix[<span class="number">1</span>, i] = matrix[<span class="number">1</span>, i - <span class="number">1</span>] * w</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>, n1):</span><br><span class="line">        matrix[i, :] = matrix[i - <span class="number">1</span>, :] * matrix[<span class="number">1</span>, :]</span><br><span class="line">    <span class="comment"># for i in range(n1):</span></span><br><span class="line">    <span class="comment">#     for j in range(n2):</span></span><br><span class="line">    <span class="comment">#         matrix[i][j] = np.exp(-2j * np.pi * i * j / len)</span></span><br><span class="line">    <span class="keyword">return</span> matrix</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bit_reverse</span>(<span class="params">x, <span class="built_in">len</span>, batch, radix_list</span>):</span><br><span class="line">    tlen = <span class="built_in">len</span> * batch</span><br><span class="line">    n2 = <span class="built_in">len</span></span><br><span class="line">    <span class="keyword">for</span> radix <span class="keyword">in</span> <span class="built_in">reversed</span>(radix_list):</span><br><span class="line">        n1 = radix</span><br><span class="line">        n2 = n2 // radix</span><br><span class="line">        x = np.transpose(x.reshape(batch, n2, n1), (<span class="number">0</span>, <span class="number">2</span>, <span class="number">1</span>)).flatten()</span><br><span class="line">        batch = batch * radix</span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">find_raidx_list</span>(<span class="params"><span class="built_in">len</span></span>):</span><br><span class="line">    radix = [<span class="number">16</span>, <span class="number">8</span>, <span class="number">4</span>, <span class="number">2</span>]</span><br><span class="line">    <span class="built_in">list</span> = []</span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> radix:</span><br><span class="line">        <span class="keyword">while</span> <span class="built_in">len</span> % r == <span class="number">0</span>:</span><br><span class="line">            <span class="built_in">list</span>.append(r)</span><br><span class="line">            <span class="built_in">len</span> = <span class="built_in">len</span> // r</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">list</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">stockham_fft</span>(<span class="params">x, <span class="built_in">len</span>, batch, radix_list</span>):</span><br><span class="line">    tlen = <span class="built_in">len</span>  * batch</span><br><span class="line">    n2 = <span class="number">1</span></span><br><span class="line">    X = x</span><br><span class="line">    <span class="keyword">for</span> radix <span class="keyword">in</span> radix_list:</span><br><span class="line">        n1 = radix</span><br><span class="line">        batch = tlen // n1 // n2</span><br><span class="line">        X = X.reshape((batch, n1, n2))</span><br><span class="line">        <span class="built_in">print</span>(X.shape)</span><br><span class="line">        tw_matrix = generate_matrix(n1, n2, <span class="number">0</span>)</span><br><span class="line">        X *= tw_matrix</span><br><span class="line">        dft_matrix = generate_matrix(radix, radix, <span class="number">1</span>)</span><br><span class="line">        X = dft_matrix @ X</span><br><span class="line">        n2 = n2 * radix</span><br><span class="line">    <span class="keyword">return</span> X.flatten()</span><br><span class="line"></span><br><span class="line">N = <span class="number">8192</span></span><br><span class="line">x = np.random.uniform(<span class="number">0</span>, <span class="number">1</span>, (N,)) + <span class="number">1.j</span> * np.random.uniform(<span class="number">1</span>, <span class="number">1</span>, (N,))</span><br><span class="line"><span class="comment"># x =np.array([1+1j, 2+1j, 3+1j, 4+1j])</span></span><br><span class="line"><span class="comment"># print(x)</span></span><br><span class="line"></span><br><span class="line">np_fft_X = np.fft.fft(x)</span><br><span class="line"></span><br><span class="line">radix_list = find_raidx_list(N)</span><br><span class="line"><span class="comment"># radix_list = [2, 2, 2]</span></span><br><span class="line">x = bit_reverse(x, N, <span class="number">1</span>, radix_list)</span><br><span class="line">X = stockham_fft(x, N, <span class="number">1</span>, radix_list)</span><br><span class="line"></span><br><span class="line"><span class="comment"># print(X)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># print(np_fft_X)</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;isCorrect: &quot;</span>, np.allclose(X, np_fft_X))</span><br></pre></td></tr></table></figure>
-
 
       
     </div>
@@ -264,19 +475,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
+          <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very
+first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for
+more info. If you get any problems when using Hexo, you can find the
+answer in <a
+target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or
+you can ask me on <a
+target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="create-a-new-post">Create a new post</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a
+target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="run-server">Run server</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
 <p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<h3 id="generate-static-files">Generate static files</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a
+target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="deploy-to-remote-sites">Deploy to remote sites</h3>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a
+target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
 
       
     </div>
@@ -443,6 +664,63 @@
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
